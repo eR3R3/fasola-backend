@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+
+  name   String   @unique
+  phone  String
+  gender Gender
+  role   UserRole
+
+  clubId Int?
+  club   Club? @relation(fields: [clubId], references: [id], onDelete: SetNull)
+
+  miniClubId Int?
+  miniClub   MiniClub? @relation(fields: [miniClubId], references: [id], onDelete: SetNull)
+
+  positionId Int?
+  position   Position? @relation(fields: [positionId], references: [id], onDelete: SetNull)
+}
+
+model Club {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+
+  name String @unique
+
+  user     User[]
+  miniClub MiniClub[]
+  position Position[]
+}
+
+model MiniClub {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+
+  name String @unique
+
+  clubId Int
+  club   Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  user User[]
+}
+
+model Position {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+
+  name String @unique
+
+  club Club[]
+  user User[]
+}
+
+model Question {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+
+  name    String @unique
+  content String @unique
+}
+
+model MiniTest {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+
+  name String @unique
+}
+
+model Test {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  LEADER
+  WORKER
+}

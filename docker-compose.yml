@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  rebirth-db:
+    image: postgres:13
+    ports:
+     - 3002:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: rebirth
+    networks:
+      - patience
+networks:
+  patience:
+
