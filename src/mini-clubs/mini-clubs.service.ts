@@ -33,14 +33,17 @@ export class MiniClubsService {
       if(updateMiniClubInfo.user.map(user=>user.role).filter(each=>each==="LEADER").length>=2){
         throw new HttpException("一个部门不能有一个以上的LEADER", HttpStatus.CONFLICT)
       }
-      if(updateMiniClubInfo.user) {
+      if(updateMiniClubInfo.user&&updateMiniClubInfo.club) {
         updateMiniClubInfo.user.map(async (user) => {
           await this.prisma.user.update({
             where: {
               name: user.name
             },
             data: {
-              role: user.role
+              role: user.role,
+              club: {
+                connect:{ name: updateMiniClubInfo.club }
+              }
             }
           })
         })

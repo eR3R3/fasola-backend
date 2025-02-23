@@ -24,7 +24,10 @@ export class UsersController {
 
   @Post("/findOne")
   async findUserByName(@Body() findUserInfo: {name: string}){
-    return await this.user.findUserByName(findUserInfo.name)
+    console.log(1, findUserInfo)
+    const user = await this.user.findUserByName(findUserInfo.name)
+    console.log(2, user)
+    return user
   }
 
   @Delete("/delete/:id")

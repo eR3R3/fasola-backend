@@ -17,6 +17,9 @@ model User {
   gender Gender
   role   UserRole
 
+  reviewerAssignments TestAssignment[] @relation("reviewer")
+  revieweeAssignments TestAssignment[] @relation("reviewee")
+
   clubId Int?
   club   Club? @relation(fields: [clubId], references: [id], onDelete: SetNull)
 
@@ -70,6 +73,8 @@ model Question {
 
   name    String @unique
   content String @unique
+
+  miniTest   MiniTest[]
 }
 
 model MiniTest {
@@ -77,13 +82,49 @@ model MiniTest {
   createdTime DateTime @default(now())
   updatedTime DateTime @updatedAt
 
-  name String @unique
+  name        String @unique
+  description String?
+  proportion Float[]
+
+  question   Question[]
+  test       Test[]
 }
 
 model Test {
   id          Int      @id @default(autoincrement())
   createdTime DateTime @default(now())
   updatedTime DateTime @updatedAt
+
+  name        String @unique
+  proportion  Float[]
+
+  miniTest   MiniTest[]
+  assignment TestAssignment[]
+}
+
+model TestAssignment {
+  id          Int      @id @default(autoincrement())
+  createdTime DateTime @default(now())
+  updatedTime DateTime @updatedAt
+
+  reviewerId Int
+  reviewer   User @relation("reviewer", fields: [reviewerId], references: [id])
+
+  revieweeId Int
+  reviewee   User @relation("reviewee", fields: [revieweeId], references: [id])
+
+  testId    Int
+  test      Test     @relation(fields: [testId], references: [id])
+  
+  status    TestStatus @default(PENDING) 
+  scoreSet  Int[]
+  score     Float?
+}
+
+enum TestStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
 }
 
 enum Gender {
