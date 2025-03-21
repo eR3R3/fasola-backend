@@ -74,7 +74,8 @@ export class UsersService {
   }
 
   async findAll(){
-    const allUsers = await this.prisma.user.findMany({select:{
+    const allUsers = await this.prisma.user.findMany({
+      select:{
         id:true,
         phone:true,
         gender:true,
@@ -187,10 +188,54 @@ export class UsersService {
   }
 
   async deleteUserById(id: number){
+    const foundUser = await this.prisma.user.findUnique({where:{id}})
+    if(!foundUser){throw new HttpException("无法找到用户", HttpStatus.CONFLICT)}
+    const deletedAssignment = await this.prisma.testAssignment.deleteMany({where:{reviewer:{some:{id}}}})
     return this.prisma.user.delete({where:{id}})
   }
 
   async deleteUserByName(name: string){
+    const foundUser = await this.prisma.user.findUnique({where:{name}})
+    if(!foundUser){throw new HttpException("无法找到用户", HttpStatus.CONFLICT)}
+    const deletedAssignment = await this.prisma.testAssignment.deleteMany({where:{reviewer:{some:{name}}}})
     return this.prisma.user.delete({where:{name}})
+  }
+
+  async syncClerkData(syncClerkDataInfo: {name: string, email: string}){
+    const foundUser = await this.prisma.user.findUnique({where:{name: syncClerkDataInfo.name}})
+    if(!foundUser){throw new HttpException("无法找到用户", HttpStatus.CONFLICT)}
+    const updatedUser = await this.prisma.user.update({where:{id: foundUser.id},
+      data:{
+        email: syncClerkDataInfo.email,
+        name: syncClerkDataInfo.name
+      }
+    })
+    return updatedUser
+  }
+
+  async getTestData(name: string){
+    const foundUser = await this.prisma.user.findUnique({where:{name}, include:{club: true, miniClub:true, position:true}})
+    if(!foundUser){throw new HttpException("无法找到用户", HttpStatus.CONFLICT)}
+    const testData = await this.prisma.testAssignment.findMany({
+      where:{reviewer: {
+        some: {
+          name: foundUser.name
+        }
+      }}, 
+      include:{
+        reviewer: true, 
+        reviewee: true,
+        test: {
+          include: {
+            miniTest: {
+              include: {
+                question: true
+              }
+            }
+          }
+        }
+      }
+    })
+    return testData
   }
 }

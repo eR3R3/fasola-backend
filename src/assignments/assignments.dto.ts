@@ -2,6 +2,20 @@ import { TestStatus } from "@prisma/client";
 import { Type } from "class-transformer";
 import { IsArray, IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator";
 
+export class AssignmentDto {
+  @IsNumber()
+  @IsNotEmpty()
+  questionId: number
+
+  @IsString()
+  @IsNotEmpty()
+  content: string
+
+  @IsArray()
+  @IsNotEmpty()
+  reviewers: string[]
+}
+
 export class CreateAssignmentDto {
   @IsString()
   @IsNotEmpty()
@@ -10,16 +24,25 @@ export class CreateAssignmentDto {
   @IsNotEmpty()
   @Type(() => String)
   @IsArray()
-  reviewer: string[] 
+  reviewers: string[] 
 
   @IsNotEmpty()
   @Type(() => String)
   @IsArray()
-  reviewee: string[]
+  reviewees: string[]
+
+  @IsNotEmpty()
+  assignmentType: "person" | "miniClub" | "club"
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => AssignmentDto)
+  assignments: AssignmentDto[]
 }
 
 
-export class UpdateAssignmentDto {
+export class UpdateAssignmentScoreDto {
   @IsNotEmpty()
   @IsNumber()
   id: number
@@ -32,8 +55,7 @@ export class UpdateAssignmentDto {
 
 export class UpdateAssignmentStateDto {
   @IsNotEmpty()
-  @IsNumber()
-  id: number
+  id: any
   
   @IsNotEmpty()
   @IsString()

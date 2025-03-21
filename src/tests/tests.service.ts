@@ -99,6 +99,26 @@ export class TestsService {
     return test;
   }
 
+  async findTestById(id: number) {
+    const test = await this.prisma.test.findUnique({
+      where: { id },
+      include: {
+        miniTest: {
+          include: {
+            question: true
+          }
+        },
+        assignment: true
+      },
+    });
+
+    if (!test) {
+      throw new HttpException('Test not found', HttpStatus.NOT_FOUND);
+    }
+
+    return test;
+  }
+
   async deleteTest(id: number) {
     const existingTest = await this.prisma.test.findUnique({
       where: { id },

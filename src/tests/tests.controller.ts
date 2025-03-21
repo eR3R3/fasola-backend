@@ -17,7 +17,8 @@ export class TestsController {
   }
 
   @Get('findOne/:name')
-  async findTestById(@Param('name') name: string) {
+  async findTestByNanme(@Param('name') name: string) {
+    name = decodeURIComponent(name)
     return await this.testsService.findTestByName(name);
   }
 

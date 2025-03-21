@@ -24,7 +24,7 @@ export class UsersController {
 
   @Post("/findOne")
   async findUserByName(@Body() findUserInfo: {name: string}){
-    console.log(1, findUserInfo)
+    console.log("1", findUserInfo)
     const user = await this.user.findUserByName(findUserInfo.name)
     console.log(2, user)
     return user
@@ -38,5 +38,17 @@ export class UsersController {
   @Delete("/delete/name/:name")
   async deleteUserByName(@Param('name')  name: string){
     return await this.user.deleteUserByName(name)
+  }
+
+  @Post("/syncClerkData")
+  async syncClerkData(@Body() syncClerkDataInfo: {name: string, email: string}){
+    return await this.user.syncClerkData(syncClerkDataInfo)
+  }
+
+  @Get("/getTestData/:name")
+  async getTestData(@Param('name') name: string){
+    console.log(name, 1)
+    name = decodeURIComponent(name)
+    return await this.user.getTestData(name)
   }
 }

@@ -38,5 +38,4 @@ export class ClubsController {
   async updateClubs(@Body() updateClubInfo: UpdateClubDto){
     return await this.club.updateClub(updateClubInfo)
   }
-
 }

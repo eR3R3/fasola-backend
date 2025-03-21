@@ -16,6 +16,7 @@ model User {
   phone  String
   gender Gender
   role   UserRole
+  email  String? @unique
 
   reviewerAssignments TestAssignment[] @relation("reviewer")
   revieweeAssignments TestAssignment[] @relation("reviewee")
@@ -107,15 +108,16 @@ model TestAssignment {
   createdTime DateTime @default(now())
   updatedTime DateTime @updatedAt
 
-  reviewerId Int
-  reviewer   User @relation("reviewer", fields: [reviewerId], references: [id])
+  questionRecord String[]
+
+  reviewer   User[] @relation("reviewer")
 
   revieweeId Int
   reviewee   User @relation("reviewee", fields: [revieweeId], references: [id])
 
   testId    Int
   test      Test     @relation(fields: [testId], references: [id])
-  
+        
   status    TestStatus @default(PENDING) 
   scoreSet  Int[]
   score     Float?
